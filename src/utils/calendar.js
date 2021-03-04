@@ -20,5 +20,9 @@ export function initCalendar(pickedDate) {
         d.setDate(d.getDate() + 1);
     }
 
-    return { label: label, days: dayTable }
+    const weeksTable = new Array(weeks)
+        .fill()
+        .map(() => dayTable.splice(0, 7))
+
+    return { label: label, days: weeksTable }
 }
