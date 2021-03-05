@@ -1,11 +1,13 @@
 <template>
   <form :onsubmit="handleSubmit">
 
+    <p class="price-label">{{price}}</p>
     <StarRating
       :star-value="starValue"
       :votes-number="votesNumber"
     />
-    <DatePicker v-if="false" />
+    <hr />
+    <DatePicker />
 
     <button type="submit">Submit</button>
   </form>
@@ -19,9 +21,16 @@ export default {
   components: { StarRating, DatePicker },
   data() {
     return {
+      priceValue: 298,
+      priceUnit: "zł",
       starValue: 3.3,
       votesNumber: 123,
     };
+  },
+  computed: {
+    price() {
+      return `${this.priceValue} ${this.priceUnit}`;
+    },
   },
   methods: {
     testFun() {
@@ -42,5 +51,11 @@ form {
   border: 2px solid var(--border);
   display: flex;
   flex-direction: column;
+  margin-top: 20px;
+}
+
+.price-label {
+  padding: 0px;
+  margin: 0px;
 }
 </style>
