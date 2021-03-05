@@ -83,5 +83,49 @@
 export default {};
 </script>
 
-<style>
+<style lang="scss">
+.datepicker__header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 10px;
+  align-items: center;
+  background: var(--primary);
+}
+
+.datepicker__changeMonth {
+  background: none;
+  height: 40px;
+  border: none;
+}
+
+.calendar__cell button {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.calendar__cell:hover button {
+  border: 2px solid var(--primary);
+}
+
+.calendar__cell--edgePick button {
+  background: #00dbb1;
+  border-radius: 50%;
+  color: white;
+}
+
+.calendar__cell--rangePick button {
+  background: #02ffcc44;
+  border: 2px solid transparent;
+  border-radius: 0;
+  color: var(--primary);
+}
+
+.calendar__cell:hover button {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
 </style>
