@@ -20,6 +20,31 @@
       </button>
     </div>
 
+    <div class="datepicker__header">
+      <button
+        class="datepicker__changeMonth"
+        aria-label="previous month"
+        type="button"
+      >
+        prev
+      </button>
+      <h2
+        id="id-dialog-label"
+        class="monthYear"
+        aria-live="polite"
+        type="button"
+      >
+        label
+      </h2>
+      <button
+        class="datepicker__changeMonth"
+        aria-label="next month"
+        type="button"
+      >
+        next
+      </button>
+    </div>
+
     <table
       id="myDatepickerGrid"
       class="calendar"
@@ -59,6 +84,24 @@
         </tr>
       </thead>
       <tbody class="calendar__content">
+
+        <tr class="calendar__row">
+          <td class="calendar__cell">
+            <button tabindex="-1">
+              AAAA
+            </button>
+          </td>
+          <td class="calendar__cell">
+            <button tabindex="-1">
+              BBBB
+            </button>
+          </td>
+          <td class="calendar__cell">
+            <button tabindex="-1">
+              CCCC
+            </button>
+          </td>
+        </tr>
 
       </tbody>
     </table>
