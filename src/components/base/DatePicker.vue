@@ -1,9 +1,10 @@
 <template>
   <div
-    id="myDatepicker"
+    id="datepicker"
     class="datepicker"
     style="border: 1px solid red; padding: 15px"
   >
+    Current: {{ currentDate }}
     <div class="date">
       <label for="id-textbox-1"> Date </label>
       <input
@@ -34,7 +35,7 @@
         aria-live="polite"
         type="button"
       >
-        label
+        {{ calendarLabel }}
       </h2>
       <button
         class="datepicker__changeMonth"
@@ -84,25 +85,29 @@
         </tr>
       </thead>
       <tbody class="calendar__content">
-
-        <tr class="calendar__row">
-          <td class="calendar__cell">
-            <button tabindex="-1">
-              AAAA
-            </button>
-          </td>
-          <td class="calendar__cell">
-            <button tabindex="-1">
-              BBBB
-            </button>
-          </td>
-          <td class="calendar__cell">
-            <button tabindex="-1">
-              CCCC
+        <tr
+          v-for="(week, index) in calendarDays"
+          class="calendar__row"
+          :key="index"
+        >
+          <td
+            v-for="(day, index) in week"
+            class="calendar__cell"
+            :class="getCellClass(day)"
+            :key="index"
+            :id="`calendar__cell-${transformDate(day.date)}`"
+          >
+            <button
+              type="button"
+              tabindex="-1"
+              :disabled="day.currentMonth"
+              @click="pickDate(day.date)"
+              :id="`calendar__button-${transformDate(day.date)}`"
+            >
+              {{ day.date.getDate() }}
             </button>
           </td>
         </tr>
-
       </tbody>
     </table>
     <div class="dialogButtonGroup">
@@ -123,7 +128,143 @@
 </template>
 
 <script>
-export default {};
+import { defineComponent, ref, onMounted, nextTick } from "vue";
+import { initCalendar } from "../../utils/calendar";
+
+export default defineComponent({
+  name: "DatePicker",
+  setup() {
+    let pickedDays = ref([]);
+    let transformDate = function (date) {
+      return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    };
+    let setFocus = function () {
+      nextTick(() => {
+        let button = document.getElementById(
+          `calendar__button-${transformDate(currentDate.value)}`
+        );
+        button.focus();
+      });
+    };
+    let pickDate = function (date) {
+      if (
+        pickedDays.value.find(
+          (calendarDate) => calendarDate.getTime() == date.getTime()
+        )
+      ) {
+        let index = pickedDays.value.findIndex(
+          (calendarDate) => calendarDate.getTime() == date.getTime()
+        );
+        pickedDays.value.splice(index, 1);
+      } else if (pickedDays.value.length == 2) {
+        pickedDays.value = [date];
+      } else {
+        pickedDays.value.push(date);
+      }
+      pickedDays.value = pickedDays.value.sort((a, b) => a - b);
+    };
+
+    let isCalendarOpen = ref(true);
+    let currentDate = ref(new Date(2021, 1, 1));
+    let { label, days } = initCalendar(currentDate.value);
+    let calendarLabel = ref(label);
+    let calendarDays = ref(days);
+
+    let getCellClass = function (day) {
+      if (
+        pickedDays.value.find(
+          (calendarDate) => calendarDate.getTime() == day.date.getTime()
+        )
+      ) {
+        return "calendar__cell--edgePick";
+      }
+      if (
+        pickedDays.value.length == 2 &&
+        day.date > pickedDays.value[0] &&
+        day.date < pickedDays.value[1]
+      ) {
+        return "calendar__cell--rangePick";
+      }
+      return "";
+    };
+
+    function prevMonth() {
+      currentDate.value = new Date(
+        currentDate.value.setMonth(currentDate.value.getMonth() - 1)
+      );
+      calendarLabel.value = initCalendar(currentDate.value).label;
+      calendarDays.value = initCalendar(currentDate.value).days;
+    }
+
+    function nextMonth() {
+      currentDate.value = new Date(
+        currentDate.value.setMonth(currentDate.value.getMonth() + 1)
+      );
+      calendarLabel.value = initCalendar(currentDate.value).label;
+      calendarDays.value = initCalendar(currentDate.value).days;
+    }
+
+    function showModal() {
+      isCalendarOpen.value = !isCalendarOpen.value;
+    }
+
+    onMounted(() => {
+      document
+        .getElementById("datepicker")
+        .addEventListener("keydown", function (event) {
+          event.preventDefault();
+          let { key } = event;
+
+          if (key == "ArrowRight") {
+            currentDate.value = new Date(
+              currentDate.value.setDate(currentDate.value.getDate() + 1)
+            );
+            calendarLabel.value = initCalendar(currentDate.value).label;
+            calendarDays.value = initCalendar(currentDate.value).days;
+            setFocus();
+          } else if (key == "ArrowLeft") {
+            currentDate.value = new Date(
+              currentDate.value.setDate(currentDate.value.getDate() - 1)
+            );
+            calendarLabel.value = initCalendar(currentDate.value).label;
+            calendarDays.value = initCalendar(currentDate.value).days;
+            setFocus();
+          } else if (key == "ArrowUp") {
+            currentDate.value = new Date(
+              currentDate.value.setDate(currentDate.value.getDate() - 7)
+            );
+            calendarLabel.value = initCalendar(currentDate.value).label;
+            calendarDays.value = initCalendar(currentDate.value).days;
+            setFocus();
+          } else if (key == "ArrowDown") {
+            currentDate.value = new Date(
+              currentDate.value.setDate(currentDate.value.getDate() + 7)
+            );
+            calendarLabel.value = initCalendar(currentDate.value).label;
+            calendarDays.value = initCalendar(currentDate.value).days;
+            setFocus();
+          } else if (key == "Enter" || key == " ") {
+            event.target.click();
+          }
+        });
+      setFocus();
+    });
+
+    return {
+      prevMonth,
+      nextMonth,
+      showModal,
+      isCalendarOpen,
+      currentDate,
+      calendarLabel,
+      calendarDays,
+      getCellClass,
+      pickedDays,
+      pickDate,
+      transformDate,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
@@ -155,9 +296,9 @@ export default {};
 }
 
 .calendar__cell--edgePick button {
-  background: #00dbb1;
-  border-radius: 50%;
+  background: var(--primary);
   color: white;
+  border-radius: 50%;
 }
 
 .calendar__cell--rangePick button {
@@ -169,6 +310,6 @@ export default {};
 
 .calendar__cell:hover button {
   border: 2px solid var(--primary);
-  color: var(--primary);
+  // color: var(--primary);
 }
 </style>
