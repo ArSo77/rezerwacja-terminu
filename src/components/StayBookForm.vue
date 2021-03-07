@@ -1,5 +1,8 @@
 <template>
-  <form :onsubmit="handleSubmit">
+  <form
+    :onsubmit="handleSubmit"
+    style="1px solid red"
+  >
 
     <p class="price-label">{{price}}</p>
     <StarRating
@@ -47,7 +50,6 @@ export default {
 form {
   min-height: 200px;
   width: 50%;
-  margin: auto 50px;
   border: 2px solid var(--border);
   display: flex;
   flex-direction: column;

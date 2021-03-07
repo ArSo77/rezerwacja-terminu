@@ -21,7 +21,10 @@
       </button>
     </div>
 
-    <div class="datepicker__header">
+    <div
+      class="datepicker__header"
+      v-click-outside="closeFun"
+    >
       <button
         class="datepicker__changeMonth"
         aria-label="previous month"
@@ -134,6 +137,10 @@ import { initCalendar } from "../../utils/calendar";
 export default defineComponent({
   name: "DatePicker",
   setup() {
+    let closeFun = function () {
+      console.log("CLOSE FUNCTION");
+    };
+
     let pickedDays = ref([]);
     let transformDate = function (date) {
       return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -262,6 +269,7 @@ export default defineComponent({
       pickedDays,
       pickDate,
       transformDate,
+      closeFun,
     };
   },
 });
