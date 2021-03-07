@@ -20,7 +20,10 @@
         Show
       </button> -->
 
-      <div style="border: 2px solid blue">
+      <div
+        style="border: 2px solid blue"
+        @click="isOpened = true"
+      >
         <div>
           {{CheckInDate}}
         </div>
@@ -28,104 +31,103 @@
         <div>
           {{CheckOutDate}}
         </div>
-
       </div>
+
     </div>
 
-    <div
-      class="datepicker__header"
-      v-click-outside="closeFun"
-    >
-      <button
-        class="datepicker__changeMonth"
-        id="datepicker__previous-button"
-        aria-label="previous month"
-        type="button"
-      >
-        prev
-      </button>
-      <h2
-        id="id-dialog-label"
-        class="monthYear"
-        aria-live="polite"
-        type="button"
-      >
-        {{ calendarLabel }}
-      </h2>
-      <button
-        id="datepicker__next-button"
-        class="datepicker__changeMonth"
-        aria-label="next month"
-        type="button"
-      >
-        next
-      </button>
-    </div>
-
-    <table
-      id="myDatepickerGrid"
-      class="calendar"
-      role="grid"
-      aria-labelledby="id-dialog-label"
-    >
-      <thead class="calendar__header">
-        <tr>
-          <th
-            scope="col"
-            abbr="Sunday"
-          >Su</th>
-          <th
-            scope="col"
-            abbr="Monday"
-          >Mo</th>
-          <th
-            scope="col"
-            abbr="Tuesday"
-          >Tu</th>
-          <th
-            scope="col"
-            abbr="Wednesday"
-          >We</th>
-          <th
-            scope="col"
-            abbr="Thursday"
-          >Th</th>
-          <th
-            scope="col"
-            abbr="Friday"
-          >Fr</th>
-          <th
-            scope="col"
-            abbr="Saturday"
-          >Sa</th>
-        </tr>
-      </thead>
-      <tbody class="calendar__content">
-        <tr
-          v-for="(week, index) in calendarDays"
-          class="calendar__row"
-          :key="index"
+    <div v-show="isOpened">
+      <div class="datepicker__header">
+        <button
+          class="datepicker__changeMonth"
+          id="datepicker__previous-button"
+          aria-label="previous month"
+          type="button"
         >
-          <td
-            v-for="(day, index) in week"
-            class="calendar__cell"
-            :class="getCellClass(day)"
+          prev
+        </button>
+        <h2
+          id="id-dialog-label"
+          class="monthYear"
+          aria-live="polite"
+          type="button"
+        >
+          {{ calendarLabel }}
+        </h2>
+        <button
+          id="datepicker__next-button"
+          class="datepicker__changeMonth"
+          aria-label="next month"
+          type="button"
+        >
+          next
+        </button>
+      </div>
+
+      <table
+        id="myDatepickerGrid"
+        class="calendar"
+        role="grid"
+        aria-labelledby="id-dialog-label"
+      >
+        <thead class="calendar__header">
+          <tr>
+            <th
+              scope="col"
+              abbr="Sunday"
+            >Su</th>
+            <th
+              scope="col"
+              abbr="Monday"
+            >Mo</th>
+            <th
+              scope="col"
+              abbr="Tuesday"
+            >Tu</th>
+            <th
+              scope="col"
+              abbr="Wednesday"
+            >We</th>
+            <th
+              scope="col"
+              abbr="Thursday"
+            >Th</th>
+            <th
+              scope="col"
+              abbr="Friday"
+            >Fr</th>
+            <th
+              scope="col"
+              abbr="Saturday"
+            >Sa</th>
+          </tr>
+        </thead>
+        <tbody class="calendar__content">
+          <tr
+            v-for="(week, index) in calendarDays"
+            class="calendar__row"
             :key="index"
-            :id="`calendar__cell-${transformDate(day.date)}`"
           >
-            <button
-              type="button"
-              tabindex="-1"
-              :disabled="day.currentMonth"
-              @click="pickDate(day.date)"
-              :id="`calendar__button-${transformDate(day.date)}`"
+            <td
+              v-for="(day, index) in week"
+              class="calendar__cell"
+              :class="getCellClass(day)"
+              :key="index"
+              :id="`calendar__cell-${transformDate(day.date)}`"
             >
-              {{ day.date.getDate() }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              <button
+                type="button"
+                tabindex="-1"
+                :disabled="day.currentMonth"
+                @click="pickDate(day.date)"
+                :id="`calendar__button-${transformDate(day.date)}`"
+              >
+                {{ day.date.getDate() }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -136,8 +138,11 @@ import { initCalendar } from "../../utils/calendar";
 export default defineComponent({
   name: "DatePicker",
   setup() {
-    let closeFun = function () {
+    let isOpened = ref(false);
+
+    let closeModal = function () {
       console.log("CLOSE FUNCTION");
+      isOpened.value = false;
     };
 
     let pickedDays = ref([]);
@@ -240,7 +245,12 @@ export default defineComponent({
         .addEventListener("keydown", function (event) {
           event.preventDefault();
           let { key } = event;
-          if (key == "ArrowRight") {
+          if (
+            key != "Tab" &&
+            !document.activeElement.id.startsWith("calendar__button")
+          ) {
+            return;
+          } else if (key == "ArrowRight") {
             changeDateAndFocus(1);
           } else if (key == "ArrowLeft") {
             changeDateAndFocus(-1);
@@ -274,7 +284,8 @@ export default defineComponent({
       pickedDays,
       pickDate,
       transformDate,
-      closeFun,
+      closeModal,
+      isOpened,
     };
   },
 });
