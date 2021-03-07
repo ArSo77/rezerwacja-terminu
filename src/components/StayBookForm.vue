@@ -3,7 +3,6 @@
     :onsubmit="handleSubmit"
     style="1px solid red"
   >
-
     <p class="price-label">{{price}}</p>
     <StarRating
       :star-value="starValue"
@@ -11,10 +10,11 @@
     />
     <hr />
     <DatePicker />
-
-    <button type="submit">Submit</button>
+    <button
+      id="submit-button"
+      type="submit"
+    >Submit</button>
   </form>
-
 </template>
 
 <script>
@@ -26,7 +26,7 @@ export default {
     return {
       priceValue: 298,
       priceUnit: "zł",
-      starValue: 3.3,
+      starValue: 4.4,
       votesNumber: 123,
     };
   },
@@ -36,11 +36,8 @@ export default {
     },
   },
   methods: {
-    testFun() {
-      console.log("TESTSETEST");
-    },
     handleSubmit() {
-      console.log("HANDLE SUBMIT");
+      //todo
     },
   },
 };
@@ -48,16 +45,21 @@ export default {
 
 <style lang="scss">
 form {
-  min-height: 200px;
   width: 50%;
   border: 2px solid var(--border);
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  padding: 1rem 1.5rem;
 }
 
 .price-label {
   padding: 0px;
   margin: 0px;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#submit-button {
+  margin-top: 20px;
 }
 </style>

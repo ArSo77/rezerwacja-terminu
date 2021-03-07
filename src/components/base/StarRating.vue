@@ -48,7 +48,7 @@ export default {
 
 .votes-label {
   padding-left: 5px;
-  font-size: 0.825rem;
+  font-size: 0.75rem;
   font-weight: bold;
 }
 </style>
