@@ -7,7 +7,7 @@
     Current: {{ currentDate }}
     <div class="date">
       <label for="id-textbox-1"> Date </label>
-      <input
+      <!-- <input
         type="text"
         placeholder="mm/dd/yyyy"
         id="id-textbox-1"
@@ -18,7 +18,18 @@
         aria-label="Choose Date"
       >
         Show
-      </button>
+      </button> -->
+
+      <div style="border: 2px solid blue">
+        <div>
+          {{CheckInDate}}
+        </div>
+
+        <div>
+          {{CheckOutDate}}
+        </div>
+
+      </div>
     </div>
 
     <div
@@ -27,6 +38,7 @@
     >
       <button
         class="datepicker__changeMonth"
+        id="datepicker__previous-button"
         aria-label="previous month"
         type="button"
       >
@@ -41,6 +53,7 @@
         {{ calendarLabel }}
       </h2>
       <button
+        id="datepicker__next-button"
         class="datepicker__changeMonth"
         aria-label="next month"
         type="button"
@@ -113,20 +126,6 @@
         </tr>
       </tbody>
     </table>
-    <div class="dialogButtonGroup">
-      <button
-        class="dialogButton"
-        value="cancel"
-      >Cancel</button>
-      <button
-        class="dialogButton"
-        value="ok"
-      >OK</button>
-    </div>
-    <div
-      class="message"
-      aria-live="polite"
-    >Test</div>
   </div>
 </template>
 
@@ -215,49 +214,55 @@ export default defineComponent({
       isCalendarOpen.value = !isCalendarOpen.value;
     }
 
+    function changeDateAndFocus(noOfDays) {
+      currentDate.value = new Date(
+        currentDate.value.setDate(currentDate.value.getDate() + noOfDays)
+      );
+      calendarLabel.value = initCalendar(currentDate.value).label;
+      calendarDays.value = initCalendar(currentDate.value).days;
+      setFocus();
+    }
+
+    function tabFocusElement() {
+      let focusedElement = document.activeElement.id;
+      if (focusedElement.startsWith("calendar__button")) {
+        document.getElementById("datepicker__previous-button").focus();
+      } else if (focusedElement.startsWith("datepicker__previous-button")) {
+        document.getElementById("datepicker__next-button").focus();
+      } else {
+        setFocus();
+      }
+    }
+
     onMounted(() => {
       document
         .getElementById("datepicker")
         .addEventListener("keydown", function (event) {
           event.preventDefault();
           let { key } = event;
-
           if (key == "ArrowRight") {
-            currentDate.value = new Date(
-              currentDate.value.setDate(currentDate.value.getDate() + 1)
-            );
-            calendarLabel.value = initCalendar(currentDate.value).label;
-            calendarDays.value = initCalendar(currentDate.value).days;
-            setFocus();
+            changeDateAndFocus(1);
           } else if (key == "ArrowLeft") {
-            currentDate.value = new Date(
-              currentDate.value.setDate(currentDate.value.getDate() - 1)
-            );
-            calendarLabel.value = initCalendar(currentDate.value).label;
-            calendarDays.value = initCalendar(currentDate.value).days;
-            setFocus();
+            changeDateAndFocus(-1);
           } else if (key == "ArrowUp") {
-            currentDate.value = new Date(
-              currentDate.value.setDate(currentDate.value.getDate() - 7)
-            );
-            calendarLabel.value = initCalendar(currentDate.value).label;
-            calendarDays.value = initCalendar(currentDate.value).days;
-            setFocus();
+            changeDateAndFocus(-7);
           } else if (key == "ArrowDown") {
-            currentDate.value = new Date(
-              currentDate.value.setDate(currentDate.value.getDate() + 7)
-            );
-            calendarLabel.value = initCalendar(currentDate.value).label;
-            calendarDays.value = initCalendar(currentDate.value).days;
-            setFocus();
+            changeDateAndFocus(7);
           } else if (key == "Enter" || key == " ") {
             event.target.click();
+          } else if (key == "Tab") {
+            tabFocusElement();
           }
         });
       setFocus();
     });
 
+    let CheckInDate = ref("CheckInDate");
+    let CheckOutDate = ref("CheckOutDate");
+
     return {
+      CheckInDate,
+      CheckOutDate,
       prevMonth,
       nextMonth,
       showModal,
