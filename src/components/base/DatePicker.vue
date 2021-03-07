@@ -2,64 +2,52 @@
   <div
     id="datepicker"
     class="datepicker"
-    style="border: 1px solid red; padding: 15px"
   >
-    Current: {{ currentDate }}
-    <div class="date">
-      <label for="id-textbox-1"> Date </label>
-      <!-- <input
-        type="text"
-        placeholder="mm/dd/yyyy"
-        id="id-textbox-1"
-        aria-autocomplete="none"
-      />
-      <button
-        class="icon"
-        aria-label="Choose Date"
-      >
-        Show
-      </button> -->
+    <label class="datepicker__input-label"> Dates: </label>
 
-      <div
-        style="border: 2px solid blue"
-        @click="isOpened = true"
-      >
-        <div>
-          {{CheckInDate}}
-        </div>
-
-        <div>
-          {{CheckOutDate}}
-        </div>
+    <div
+      @click="isOpened = !isOpened"
+      style="border: 1px solid blue"
+    >
+      <div>
+        {{CheckInDate}}
       </div>
 
+      <div>
+        {{CheckOutDate}}
+      </div>
     </div>
 
-    <div v-show="isOpened">
+    <div
+      v-show="isOpened"
+      class="datepicker__content"
+      v-click-outside="closeModal"
+    >
       <div class="datepicker__header">
         <button
           class="datepicker__changeMonth"
-          id="datepicker__previous-button"
           aria-label="previous month"
+          id="datepicker__previous-button"
           type="button"
+          @click="changeMonth(-1)"
         >
-          prev
+          &lt;
         </button>
-        <h2
-          id="id-dialog-label"
-          class="monthYear"
+        <p
+          class="datepicker__label"
           aria-live="polite"
-          type="button"
         >
           {{ calendarLabel }}
-        </h2>
+        </p>
         <button
-          id="datepicker__next-button"
           class="datepicker__changeMonth"
           aria-label="next month"
+          id="datepicker__next-button"
           type="button"
+          @click="changeMonth(1)"
         >
-          next
+          &gt;
+
         </button>
       </div>
 
@@ -74,31 +62,31 @@
             <th
               scope="col"
               abbr="Sunday"
-            >Su</th>
+            >Sun</th>
             <th
               scope="col"
               abbr="Monday"
-            >Mo</th>
+            >Mon</th>
             <th
               scope="col"
               abbr="Tuesday"
-            >Tu</th>
+            >Tue</th>
             <th
               scope="col"
               abbr="Wednesday"
-            >We</th>
+            >Wed</th>
             <th
               scope="col"
               abbr="Thursday"
-            >Th</th>
+            >Thu</th>
             <th
               scope="col"
               abbr="Friday"
-            >Fr</th>
+            >Fri</th>
             <th
               scope="col"
               abbr="Saturday"
-            >Sa</th>
+            >Sat</th>
           </tr>
         </thead>
         <tbody class="calendar__content">
@@ -133,31 +121,40 @@
 
 <script>
 import { defineComponent, ref, onMounted, nextTick } from "vue";
-import { initCalendar } from "../../utils/calendar";
+import Calendar from "../../model/Calendar.model";
 
 export default defineComponent({
   name: "DatePicker",
   setup() {
+    let CalendarInstance = new Calendar();
+    let label = CalendarInstance.getLabel();
+    let days = CalendarInstance.getDays();
+    let currentDate = CalendarInstance.getFocusedDay();
+    let calendarLabel = ref(label);
+    let calendarDays = ref(days);
     let isOpened = ref(false);
+    let pickedDays = ref([]);
 
-    let closeModal = function () {
-      console.log("CLOSE FUNCTION");
-      isOpened.value = false;
+    let closeModal = function (e) {
+      const path = e.path || (e.composedPath ? e.composedPath() : undefined);
+      if (path && !path.includes(document.getElementById("datepicker"))) {
+        isOpened.value = false;
+      }
     };
 
-    let pickedDays = ref([]);
     let transformDate = function (date) {
       return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
     };
     let setFocus = function () {
       nextTick(() => {
         let button = document.getElementById(
-          `calendar__button-${transformDate(currentDate.value)}`
+          `calendar__button-${transformDate(CalendarInstance.getFocusedDay())}`
         );
         button.focus();
       });
     };
     let pickDate = function (date) {
+      CalendarInstance.changeFd(date);
       if (
         pickedDays.value.find(
           (calendarDate) => calendarDate.getTime() == date.getTime()
@@ -175,12 +172,6 @@ export default defineComponent({
       pickedDays.value = pickedDays.value.sort((a, b) => a - b);
     };
 
-    let isCalendarOpen = ref(true);
-    let currentDate = ref(new Date(2021, 1, 1));
-    let { label, days } = initCalendar(currentDate.value);
-    let calendarLabel = ref(label);
-    let calendarDays = ref(days);
-
     let getCellClass = function (day) {
       if (
         pickedDays.value.find(
@@ -188,43 +179,32 @@ export default defineComponent({
         )
       ) {
         return "calendar__cell--edgePick";
-      }
-      if (
+      } else if (
         pickedDays.value.length == 2 &&
         day.date > pickedDays.value[0] &&
         day.date < pickedDays.value[1]
       ) {
         return "calendar__cell--rangePick";
+      } else if (!day.available && !day.currentMonth) {
+        return "calendar__cell--not-available";
       }
       return "";
     };
 
-    function prevMonth() {
-      currentDate.value = new Date(
-        currentDate.value.setMonth(currentDate.value.getMonth() - 1)
-      );
-      calendarLabel.value = initCalendar(currentDate.value).label;
-      calendarDays.value = initCalendar(currentDate.value).days;
+    function updateComponent() {
+      calendarLabel.value = CalendarInstance.getLabel();
+      calendarDays.value = CalendarInstance.getDays();
+      currentDate.value = CalendarInstance.getFocusedDay();
     }
 
-    function nextMonth() {
-      currentDate.value = new Date(
-        currentDate.value.setMonth(currentDate.value.getMonth() + 1)
-      );
-      calendarLabel.value = initCalendar(currentDate.value).label;
-      calendarDays.value = initCalendar(currentDate.value).days;
-    }
-
-    function showModal() {
-      isCalendarOpen.value = !isCalendarOpen.value;
+    function changeMonth(value) {
+      CalendarInstance.changeMonth(value);
+      updateComponent();
     }
 
     function changeDateAndFocus(noOfDays) {
-      currentDate.value = new Date(
-        currentDate.value.setDate(currentDate.value.getDate() + noOfDays)
-      );
-      calendarLabel.value = initCalendar(currentDate.value).label;
-      calendarDays.value = initCalendar(currentDate.value).days;
+      CalendarInstance.changeDay(noOfDays);
+      updateComponent();
       setFocus();
     }
 
@@ -247,6 +227,8 @@ export default defineComponent({
           let { key } = event;
           if (
             key != "Tab" &&
+            key != "Enter" &&
+            key != " " &&
             !document.activeElement.id.startsWith("calendar__button")
           ) {
             return;
@@ -273,10 +255,7 @@ export default defineComponent({
     return {
       CheckInDate,
       CheckOutDate,
-      prevMonth,
-      nextMonth,
-      showModal,
-      isCalendarOpen,
+      changeMonth,
       currentDate,
       calendarLabel,
       calendarDays,
@@ -300,12 +279,6 @@ export default defineComponent({
   background: var(--primary);
 }
 
-.datepicker__changeMonth {
-  background: none;
-  height: 40px;
-  border: none;
-}
-
 .calendar__cell button {
   background: transparent;
   border: none;
@@ -313,6 +286,7 @@ export default defineComponent({
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  font-weight: bold;
 }
 
 .calendar__cell:hover button {
@@ -332,8 +306,91 @@ export default defineComponent({
   color: var(--primary);
 }
 
+.calendar__cell--not-available button {
+  color: var(--not-available);
+}
+
 .calendar__cell:hover button {
   border: 2px solid var(--primary);
   // color: var(--primary);
+}
+
+// --------
+.datepicker {
+  position: relative;
+  user-select: none;
+}
+
+.datepicker__content {
+  position: absolute;
+  transform: translateY(calc(100% + 15px));
+  bottom: 0px;
+  left: 0px;
+  &::after {
+    content: "";
+    width: 20px;
+    transform: rotate(-45deg);
+    border-bottom: solid 3px var(--border);
+
+    position: absolute;
+    left: 15px;
+    top: -9px;
+  }
+  &::before {
+    content: "";
+    width: 20px;
+    transform: rotate(45deg);
+    border-bottom: solid 3px var(--border);
+    position: absolute;
+    left: 27px;
+    top: -9px;
+  }
+}
+
+.datepicker__header {
+  height: 50px;
+}
+
+.datepicker__label {
+  background: transparent;
+  color: white;
+  user-select: none;
+  font-size: 1.25rem;
+}
+
+.calendar {
+  padding: 10px 10px 0px 10px;
+  background: white;
+  & th {
+    color: lightgray;
+    font-size: 0.825rem;
+    font-weight: bold;
+    background: transparent;
+  }
+}
+
+.datepicker__changeMonth {
+  position: relative;
+  background: none;
+  height: 40px;
+  border: 0px;
+  font-size: 30px;
+  font-weight: bold;
+  &::after {
+    position: absolute;
+    content: "";
+    height: 1px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 50%;
+    top: 28px;
+    background: black;
+  }
+}
+
+.datepicker__input-label {
+  font-weight: bold;
+  font-size: 1rem;
 }
 </style>

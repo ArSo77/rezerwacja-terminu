@@ -15,7 +15,7 @@ export function initCalendar(pickedDate) {
     const dayTable = []
 
     for (let day = 0; day < weeks * 7; day++) {
-        let flag = d.getMonth() != fd.getMonth();
+        let flag = d.getMonth() == fd.getMonth();
         dayTable.push({ date: new Date(d), currentMonth: flag })
         d.setDate(d.getDate() + 1);
     }
