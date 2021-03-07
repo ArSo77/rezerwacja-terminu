@@ -1,2 +1,7 @@
 @import 'variables';
 @import 'star';
+
+hr{
+    width: 100%;
+    color: var(--bg)
+}
