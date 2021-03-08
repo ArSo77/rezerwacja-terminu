@@ -6,7 +6,7 @@
     <label class="datepicker__input-label"> Dates: </label>
 
     <div
-      @click="isOpened = !isOpened"
+      @click="showModal"
       style="border: 1px solid blue"
     >
       <div>
@@ -134,6 +134,14 @@ export default defineComponent({
     let calendarDays = ref(days);
     let isOpened = ref(true);
     let pickedDays = ref([]);
+    let CheckInDate = ref("CheckInDate");
+    let CheckOutDate = ref("CheckOutDate");
+    console.log("'''''''''", pickedDays.value);
+
+    let showModal = function () {
+      isOpened.value = true;
+      setFocus();
+    };
 
     let closeModal = function (e) {
       const path = e.path || (e.composedPath ? e.composedPath() : undefined);
@@ -155,20 +163,32 @@ export default defineComponent({
     };
     let pickDate = function (date) {
       CalendarInstance.changeFd(date);
-      if (
-        pickedDays.value.find(
-          (calendarDate) => calendarDate.getTime() == date.getTime()
-        )
-      ) {
-        let index = pickedDays.value.findIndex(
-          (calendarDate) => calendarDate.getTime() == date.getTime()
-        );
-        pickedDays.value.splice(index, 1);
-      } else if (pickedDays.value.length == 2) {
-        pickedDays.value = [date];
-      } else {
+      if (pickedDays.value.length != 1) {
+        pickedDays.value.length = 0;
         pickedDays.value.push(date);
+        CheckInDate.value = pickedDays.value[0];
+        CheckOutDate.value = "";
+      } else if (pickedDays.value.length == 1) {
+        pickedDays.value.push(date);
+        pickedDays.value = pickedDays.value.sort((a, b) => a - b);
+        CheckInDate.value = pickedDays.value[0];
+        CheckOutDate.value = pickedDays.value[1];
       }
+
+      // if (
+      //   pickedDays.value.find(
+      //     (calendarDate) => calendarDate.getTime() == date.getTime()
+      //   )
+      // ) {
+      //   let index = pickedDays.value.findIndex(
+      //     (calendarDate) => calendarDate.getTime() == date.getTime()
+      //   );
+      //   pickedDays.value.splice(index, 1);
+      // } else if (pickedDays.value.length == 2) {
+      //   pickedDays.value = [date];
+      // } else {
+      //   pickedDays.value.push(date);
+      // }
       pickedDays.value = pickedDays.value.sort((a, b) => a - b);
     };
 
@@ -249,9 +269,6 @@ export default defineComponent({
       setFocus();
     });
 
-    let CheckInDate = ref("CheckInDate");
-    let CheckOutDate = ref("CheckOutDate");
-
     return {
       CheckInDate,
       CheckOutDate,
@@ -265,6 +282,7 @@ export default defineComponent({
       transformDate,
       closeModal,
       isOpened,
+      showModal,
     };
   },
 });
