@@ -27,12 +27,6 @@
         class="datepicker-input__input"
         :value="CheckOutDate"
       />
-      <!-- {{CheckInDate}} -->
-      <!-- </div> -->
-
-      <!-- <div>
-        {{CheckOutDate}}
-      </div> -->
     </div>
 
     <div
@@ -187,16 +181,20 @@ export default defineComponent({
       if (pickedDays.value.length != 1) {
         pickedDays.value.length = 0;
         pickedDays.value.push(date);
-        CheckInDate.value = pickedDays.value[0];
+        CheckInDate.value = formatDate(pickedDays.value[0]);
         CheckOutDate.value = "";
       } else if (pickedDays.value.length == 1) {
         pickedDays.value.push(date);
         pickedDays.value = pickedDays.value.sort((a, b) => a - b);
-        CheckInDate.value = pickedDays.value[0];
-        CheckOutDate.value = pickedDays.value[1];
+        CheckInDate.value = formatDate(pickedDays.value[0]);
+        CheckOutDate.value = formatDate(pickedDays.value[1]);
         closeModal();
       }
       pickedDays.value = pickedDays.value.sort((a, b) => a - b);
+    };
+
+    let formatDate = function (date) {
+      return date.toLocaleDateString("en-US");
     };
 
     let getCellClass = function (day) {
