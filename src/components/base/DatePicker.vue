@@ -10,7 +10,7 @@
       class="datepicker-input"
     >
       <input
-        type="data"
+        type="button"
         name="checkInDate"
         class="datepicker-input__input"
         :class="{'datepicker-input__input--active':isOpened&&pickedDays.length!=1}"
@@ -23,7 +23,7 @@
       />
 
       <input
-        type="data"
+        type="button"
         name="checkOutDate"
         class="datepicker-input__input"
         :class="{'datepicker-input__input--active':isOpened&&pickedDays.length==1}"
@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, nextTick } from "vue";
+import { defineComponent, ref, onMounted, nextTick, onUnmounted } from "vue";
 import Calendar from "../../model/Calendar.model";
 
 export default defineComponent({
@@ -145,7 +145,7 @@ export default defineComponent({
     let currentDate = CalendarInstance.getFocusedDay();
     let calendarLabel = ref(label);
     let calendarDays = ref(days);
-    let isOpened = ref(true);
+    let isOpened = ref(false);
     let pickedDays = ref([]);
     let CheckInDate = ref("Check In");
     let CheckOutDate = ref("Check Out");
@@ -246,37 +246,45 @@ export default defineComponent({
       }
     }
 
+    let clickEvent = function () {
+      if (!isOpened.value) return;
+      event.preventDefault();
+      let { key } = event;
+      if (
+        key != "Tab" &&
+        key != "Enter" &&
+        key != " " &&
+        !document.activeElement.id.startsWith("calendar__button")
+      ) {
+        return;
+      } else if (key == "ArrowRight") {
+        changeDateAndFocus(1);
+      } else if (key == "ArrowLeft") {
+        changeDateAndFocus(-1);
+      } else if (key == "ArrowUp") {
+        changeDateAndFocus(-7);
+      } else if (key == "ArrowDown") {
+        changeDateAndFocus(7);
+      } else if (key == "Enter" || key == " ") {
+        event.target.click();
+      } else if (key == "Tab") {
+        tabFocusElement();
+      } else if (key == "Escape") {
+        closeModal();
+      }
+    };
+
     onMounted(() => {
       document
         .getElementById("datepicker")
-        .addEventListener("keydown", function (event) {
-          if (!isOpened.value) return;
-          event.preventDefault();
-          let { key } = event;
-          if (
-            key != "Tab" &&
-            key != "Enter" &&
-            key != " " &&
-            !document.activeElement.id.startsWith("calendar__button")
-          ) {
-            return;
-          } else if (key == "ArrowRight") {
-            changeDateAndFocus(1);
-          } else if (key == "ArrowLeft") {
-            changeDateAndFocus(-1);
-          } else if (key == "ArrowUp") {
-            changeDateAndFocus(-7);
-          } else if (key == "ArrowDown") {
-            changeDateAndFocus(7);
-          } else if (key == "Enter" || key == " ") {
-            event.target.click();
-          } else if (key == "Tab") {
-            tabFocusElement();
-          } else if (key == "Escape") {
-            closeModal();
-          }
-        });
+        .addEventListener("keydown", clickEvent);
       setFocus();
+    });
+
+    onUnmounted(() => {
+      document
+        .getElementById("datepicker")
+        .removeEventListener("keydown", clickEvent);
     });
 
     return {
