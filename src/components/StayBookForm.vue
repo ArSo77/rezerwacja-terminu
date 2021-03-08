@@ -9,7 +9,7 @@
       :votes-number="votesNumber"
     />
     <hr />
-    <DatePicker />
+    <DatePicker :available-dates="availableDates" />
     <button
       id="submit-button"
       type="submit"
@@ -24,6 +24,12 @@ export default {
   components: { StarRating, DatePicker },
   data() {
     return {
+      availableDates: [
+        new Date(2021, 2, 10),
+        new Date(2021, 2, 11),
+        new Date(2021, 2, 12),
+        new Date(2021, 2, 17),
+      ],
       priceValue: 298,
       priceUnit: "zł",
       starValue: 4.4,

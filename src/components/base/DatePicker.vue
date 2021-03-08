@@ -133,13 +133,30 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, nextTick, onUnmounted } from "vue";
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  nextTick,
+  onUnmounted,
+  toRefs,
+} from "vue";
 import Calendar from "../../model/Calendar.model";
 
 export default defineComponent({
   name: "DatePicker",
-  setup() {
-    let CalendarInstance = new Calendar();
+  props: {
+    availableDates: {
+      type: Array,
+      require: false,
+      default: () => [],
+    },
+  },
+  setup(props) {
+    const { availableDates } = toRefs(props);
+    const CalendarInstance = new Calendar({
+      availableDates: availableDates.value,
+    });
     let label = CalendarInstance.getLabel();
     let days = CalendarInstance.getDays();
     let currentDate = CalendarInstance.getFocusedDay();
