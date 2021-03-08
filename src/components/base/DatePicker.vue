@@ -7,15 +7,32 @@
 
     <div
       @click="showModal"
-      style="border: 1px solid blue"
+      class="datepicker-input"
     >
-      <div>
-        {{CheckInDate}}
-      </div>
+      <input
+        type="data"
+        name="checkInDate"
+        class="datepicker-input__input"
+        :value="CheckInDate"
+      />
 
-      <div>
+      <img
+        src="../../assets/icons/right-arrow.svg"
+        class="datepicker-input__arrow"
+      />
+
+      <input
+        type="data"
+        name="checkOutDate"
+        class="datepicker-input__input"
+        :value="CheckOutDate"
+      />
+      <!-- {{CheckInDate}} -->
+      <!-- </div> -->
+
+      <!-- <div>
         {{CheckOutDate}}
-      </div>
+      </div> -->
     </div>
 
     <div
@@ -106,7 +123,7 @@
                 type="button"
                 tabindex="-1"
                 :disabled="day.currentMonth"
-                @click="pickDate(day.date)"
+                @click="pickDate(day)"
                 :id="`calendar__button-${transformDate(day.date)}`"
               >
                 {{ day.date.getDate() }}
@@ -134,9 +151,8 @@ export default defineComponent({
     let calendarDays = ref(days);
     let isOpened = ref(true);
     let pickedDays = ref([]);
-    let CheckInDate = ref("CheckInDate");
-    let CheckOutDate = ref("CheckOutDate");
-    console.log("'''''''''", pickedDays.value);
+    let CheckInDate = ref("Check In");
+    let CheckOutDate = ref("Check Out");
 
     let showModal = function () {
       isOpened.value = true;
@@ -144,7 +160,10 @@ export default defineComponent({
     };
 
     let closeModal = function (e) {
-      const path = e.path || (e.composedPath ? e.composedPath() : undefined);
+      if (e == undefined) {
+        isOpened.value = false;
+      }
+      const path = e && e.path;
       if (path && !path.includes(document.getElementById("datepicker"))) {
         isOpened.value = false;
       }
@@ -161,7 +180,9 @@ export default defineComponent({
         button.focus();
       });
     };
-    let pickDate = function (date) {
+    let pickDate = function (day) {
+      let { date, available } = day;
+      if (!available) return;
       CalendarInstance.changeFd(date);
       if (pickedDays.value.length != 1) {
         pickedDays.value.length = 0;
@@ -173,22 +194,8 @@ export default defineComponent({
         pickedDays.value = pickedDays.value.sort((a, b) => a - b);
         CheckInDate.value = pickedDays.value[0];
         CheckOutDate.value = pickedDays.value[1];
+        closeModal();
       }
-
-      // if (
-      //   pickedDays.value.find(
-      //     (calendarDate) => calendarDate.getTime() == date.getTime()
-      //   )
-      // ) {
-      //   let index = pickedDays.value.findIndex(
-      //     (calendarDate) => calendarDate.getTime() == date.getTime()
-      //   );
-      //   pickedDays.value.splice(index, 1);
-      // } else if (pickedDays.value.length == 2) {
-      //   pickedDays.value = [date];
-      // } else {
-      //   pickedDays.value.push(date);
-      // }
       pickedDays.value = pickedDays.value.sort((a, b) => a - b);
     };
 
@@ -243,6 +250,7 @@ export default defineComponent({
       document
         .getElementById("datepicker")
         .addEventListener("keydown", function (event) {
+          if (!isOpened.value) return;
           event.preventDefault();
           let { key } = event;
           if (
@@ -264,6 +272,8 @@ export default defineComponent({
             event.target.click();
           } else if (key == "Tab") {
             tabFocusElement();
+          } else if (key == "Escape") {
+            closeModal();
           }
         });
       setFocus();
@@ -479,5 +489,26 @@ td {
   left: -20px;
   width: 20px;
   content: "";
+}
+
+.datepicker-input {
+  border: 2px solid var(--border);
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  min-width: 300px;
+  &__arrow {
+    height: 20px;
+    width: 80px;
+  }
+  &__input {
+    border: none;
+    background: var(--primary);
+    padding: 2px 4px;
+    border-radius: 2px;
+    width: 100%;
+    color: var(--text-header);
+    font-size: 14px;
+  }
 }
 </style>
