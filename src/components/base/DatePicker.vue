@@ -132,7 +132,7 @@ export default defineComponent({
     let currentDate = CalendarInstance.getFocusedDay();
     let calendarLabel = ref(label);
     let calendarDays = ref(days);
-    let isOpened = ref(false);
+    let isOpened = ref(true);
     let pickedDays = ref([]);
 
     let closeModal = function (e) {
@@ -271,6 +271,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.calendar__cell {
+  position: relative;
+}
+
 .datepicker__header {
   display: flex;
   justify-content: space-between;
@@ -290,9 +294,13 @@ export default defineComponent({
 }
 
 .calendar__cell:hover button {
-  border: 2px solid var(--primary);
+  border: 1px solid var(--primary);
 }
 
+.calendar__cell--edgePick {
+  z-index: 1;
+  position: relative;
+}
 .calendar__cell--edgePick button {
   background: var(--primary);
   color: white;
@@ -300,8 +308,8 @@ export default defineComponent({
 }
 
 .calendar__cell--rangePick button {
-  background: #02ffcc44;
-  border: 2px solid transparent;
+  background: var(--primary-light);
+  border: 1px solid transparent;
   border-radius: 0;
   color: var(--primary);
 }
@@ -311,11 +319,9 @@ export default defineComponent({
 }
 
 .calendar__cell:hover button {
-  border: 2px solid var(--primary);
-  // color: var(--primary);
+  border: 1px solid var(--primary);
 }
 
-// --------
 .datepicker {
   position: relative;
   user-select: none;
@@ -331,7 +337,6 @@ export default defineComponent({
     width: 20px;
     transform: rotate(-45deg);
     border-bottom: solid 3px var(--border);
-
     position: absolute;
     left: 15px;
     top: -9px;
@@ -392,5 +397,69 @@ export default defineComponent({
 .datepicker__input-label {
   font-weight: bold;
   font-size: 1rem;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0px 10px;
+}
+
+td {
+  height: 42px;
+  padding: 0;
+}
+
+.calendar__cell--edgePick {
+  position: relative;
+  z-index: 2;
+}
+
+.calendar__cell--rangePick {
+  position: relative;
+  z-index: 1;
+}
+
+.calendar__cell--rangePick + .calendar__cell--edgePick::after {
+  background: var(--primary-light);
+  position: absolute;
+  z-index: -1;
+  height: 40px;
+  left: 0px;
+  width: 20px;
+  content: "";
+}
+
+.calendar__cell--edgePick + .calendar__cell--edgePick::after {
+  background: var(--primary-light);
+  position: absolute;
+  z-index: -1;
+  height: 40px;
+  left: 0px;
+  width: 20px;
+  content: "";
+}
+
+.calendar__cell--edgePick + .calendar__cell--rangePick::before {
+  background: var(--primary-light);
+  position: absolute;
+  z-index: -2;
+  height: 40px;
+  left: -20px;
+  width: 20px;
+  content: "";
+}
+
+.calendar__cell--edgePick + .calendar__cell--edgePick {
+  z-index: 1;
+}
+
+.calendar__cell--edgePick + .calendar__cell--edgePick::before {
+  background: var(--primary-light);
+  position: absolute;
+  z-index: 2;
+  height: 40px;
+  left: -20px;
+  width: 20px;
+  content: "";
 }
 </style>
