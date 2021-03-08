@@ -45,7 +45,7 @@ export default {
 
 <style lang="scss">
 form {
-  width: 50%;
+  width: 300px;
   border: 2px solid var(--border);
   display: flex;
   flex-direction: column;
