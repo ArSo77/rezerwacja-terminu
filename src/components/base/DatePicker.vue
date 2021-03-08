@@ -13,6 +13,7 @@
         type="data"
         name="checkInDate"
         class="datepicker-input__input"
+        :class="{'datepicker-input__input--active':isOpened&&pickedDays.length!=1}"
         :value="CheckInDate"
       />
 
@@ -25,6 +26,7 @@
         type="data"
         name="checkOutDate"
         class="datepicker-input__input"
+        :class="{'datepicker-input__input--active':isOpened&&pickedDays.length==1}"
         :value="CheckOutDate"
       />
     </div>
@@ -383,12 +385,15 @@ td {
     }
     &__input {
       border: none;
-      background: var(--primary);
+      background: transparent;
       padding: 2px 4px;
       border-radius: 2px;
       width: 100%;
       color: var(--text-header);
       font-size: 14px;
+      &--active {
+        background: var(--primary-dark);
+      }
     }
   }
 }
