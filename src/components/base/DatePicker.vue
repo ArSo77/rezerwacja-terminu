@@ -299,35 +299,140 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+table {
+  border-collapse: separate;
+  border-spacing: 0px 10px;
+}
+
+td {
+  height: 42px;
+  padding: 0;
+}
+
+.datepicker {
+  position: relative;
+  user-select: none;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 10px;
+    align-items: center;
+    background: var(--primary);
+    height: 50px;
+  }
+  &__label {
+    background: transparent;
+    color: white;
+    user-select: none;
+    font-size: 1.25rem;
+  }
+  &__changeMonth {
+    position: relative;
+    background: none;
+    height: 40px;
+    border: 0px;
+    font-size: 30px;
+    font-weight: bold;
+    &::after {
+      position: absolute;
+      content: "";
+      height: 1px;
+      margin: 0 auto;
+      left: 0;
+      right: 0;
+      width: 50%;
+      top: 28px;
+      background: black;
+    }
+  }
+  &__input-label {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  & .datepicker__content {
+    position: absolute;
+    transform: translateY(calc(100% + 15px));
+    bottom: 0px;
+    left: 0px;
+    &::after {
+      content: "";
+      width: 20px;
+      transform: rotate(-45deg);
+      border-bottom: solid 3px var(--border);
+      position: absolute;
+      left: 15px;
+      top: -9px;
+    }
+    &::before {
+      content: "";
+      width: 20px;
+      transform: rotate(45deg);
+      border-bottom: solid 3px var(--border);
+      position: absolute;
+      left: 27px;
+      top: -9px;
+    }
+  }
+  & .datepicker-input {
+    border: 2px solid var(--border);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    min-width: 300px;
+    &__arrow {
+      height: 20px;
+      width: 80px;
+    }
+    &__input {
+      border: none;
+      background: var(--primary);
+      padding: 2px 4px;
+      border-radius: 2px;
+      width: 100%;
+      color: var(--text-header);
+      font-size: 14px;
+    }
+  }
+}
+
+.calendar {
+  padding: 10px 10px 0px 10px;
+  background: white;
+  & th {
+    color: lightgray;
+    font-size: 0.825rem;
+    font-weight: bold;
+    background: transparent;
+  }
+}
+
 .calendar__cell {
   position: relative;
+  & button {
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-weight: bold;
+  }
+  &:hover button {
+    border: 1px solid var(--primary);
+  }
+  &--edgePick {
+    z-index: 1;
+    position: relative;
+  }
 }
-
-.datepicker__header {
-  display: flex;
-  justify-content: space-between;
-  padding: 0px 10px;
-  align-items: center;
-  background: var(--primary);
-}
-
-.calendar__cell button {
-  background: transparent;
-  border: none;
-  padding: 6px 10px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-weight: bold;
-}
-
-.calendar__cell:hover button {
-  border: 1px solid var(--primary);
-}
-
 .calendar__cell--edgePick {
-  z-index: 1;
   position: relative;
+  z-index: 2;
+}
+
+.calendar__cell--rangePick {
+  position: relative;
+  z-index: 1;
 }
 .calendar__cell--edgePick button {
   background: var(--primary);
@@ -348,103 +453,6 @@ export default defineComponent({
 
 .calendar__cell:hover button {
   border: 1px solid var(--primary);
-}
-
-.datepicker {
-  position: relative;
-  user-select: none;
-}
-
-.datepicker__content {
-  position: absolute;
-  transform: translateY(calc(100% + 15px));
-  bottom: 0px;
-  left: 0px;
-  &::after {
-    content: "";
-    width: 20px;
-    transform: rotate(-45deg);
-    border-bottom: solid 3px var(--border);
-    position: absolute;
-    left: 15px;
-    top: -9px;
-  }
-  &::before {
-    content: "";
-    width: 20px;
-    transform: rotate(45deg);
-    border-bottom: solid 3px var(--border);
-    position: absolute;
-    left: 27px;
-    top: -9px;
-  }
-}
-
-.datepicker__header {
-  height: 50px;
-}
-
-.datepicker__label {
-  background: transparent;
-  color: white;
-  user-select: none;
-  font-size: 1.25rem;
-}
-
-.calendar {
-  padding: 10px 10px 0px 10px;
-  background: white;
-  & th {
-    color: lightgray;
-    font-size: 0.825rem;
-    font-weight: bold;
-    background: transparent;
-  }
-}
-
-.datepicker__changeMonth {
-  position: relative;
-  background: none;
-  height: 40px;
-  border: 0px;
-  font-size: 30px;
-  font-weight: bold;
-  &::after {
-    position: absolute;
-    content: "";
-    height: 1px;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-    width: 50%;
-    top: 28px;
-    background: black;
-  }
-}
-
-.datepicker__input-label {
-  font-weight: bold;
-  font-size: 1rem;
-}
-
-table {
-  border-collapse: separate;
-  border-spacing: 0px 10px;
-}
-
-td {
-  height: 42px;
-  padding: 0;
-}
-
-.calendar__cell--edgePick {
-  position: relative;
-  z-index: 2;
-}
-
-.calendar__cell--rangePick {
-  position: relative;
-  z-index: 1;
 }
 
 .calendar__cell--rangePick + .calendar__cell--edgePick::after {
@@ -489,26 +497,5 @@ td {
   left: -20px;
   width: 20px;
   content: "";
-}
-
-.datepicker-input {
-  border: 2px solid var(--border);
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  min-width: 300px;
-  &__arrow {
-    height: 20px;
-    width: 80px;
-  }
-  &__input {
-    border: none;
-    background: var(--primary);
-    padding: 2px 4px;
-    border-radius: 2px;
-    width: 100%;
-    color: var(--text-header);
-    font-size: 14px;
-  }
 }
 </style>
