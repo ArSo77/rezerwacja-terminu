@@ -13,7 +13,7 @@
         type="button"
         name="checkInDate"
         class="datepicker-input__input"
-        :class="{'datepicker-input__input--active':isOpened&&pickedDays.length!=1}"
+        :class="{'datepicker-input__input--active':isOpened&&pickedDates.length!=1}"
         :value="CheckInDate"
       />
 
@@ -26,7 +26,7 @@
         type="button"
         name="checkOutDate"
         class="datepicker-input__input"
-        :class="{'datepicker-input__input--active':isOpened&&pickedDays.length==1}"
+        :class="{'datepicker-input__input--active':isOpened&&pickedDates.length==1}"
         :value="CheckOutDate"
       />
     </div>
@@ -151,9 +151,14 @@ export default defineComponent({
       require: false,
       default: () => [],
     },
+    pickedDates: {
+      type: Array,
+      require: true,
+    },
   },
-  setup(props) {
-    const { availableDates } = toRefs(props);
+  setup(props, { emit }) {
+    const { availableDates, pickedDates } = toRefs(props);
+    console.log(pickedDates.value);
     const CalendarInstance = new Calendar({
       availableDates: availableDates.value,
     });
@@ -163,7 +168,7 @@ export default defineComponent({
     let calendarLabel = ref(label);
     let calendarDays = ref(days);
     let isOpened = ref(false);
-    let pickedDays = ref([]);
+    // let pickedDates = ref([]);
     let CheckInDate = ref("Check In");
     let CheckOutDate = ref("Check Out");
 
@@ -197,19 +202,19 @@ export default defineComponent({
       let { date, available } = day;
       if (!available) return;
       CalendarInstance.changeFd(date);
-      if (pickedDays.value.length != 1) {
-        pickedDays.value.length = 0;
-        pickedDays.value.push(date);
-        CheckInDate.value = formatDate(pickedDays.value[0]);
+      if (pickedDates.value.length != 1) {
+        emit("update:pickedDates", [date]);
+        CheckInDate.value = formatDate(pickedDates.value[0]);
         CheckOutDate.value = "";
-      } else if (pickedDays.value.length == 1) {
-        pickedDays.value.push(date);
-        pickedDays.value = pickedDays.value.sort((a, b) => a - b);
-        CheckInDate.value = formatDate(pickedDays.value[0]);
-        CheckOutDate.value = formatDate(pickedDays.value[1]);
+      } else if (pickedDates.value.length == 1) {
+        let tempDate = pickedDates.value;
+        tempDate = tempDate.sort((a, b) => a - b);
+        tempDate.push(date);
+        emit("update:pickedDates", tempDate);
+        CheckInDate.value = formatDate(tempDate[0]);
+        CheckOutDate.value = formatDate(tempDate[1]);
         closeModal();
       }
-      pickedDays.value = pickedDays.value.sort((a, b) => a - b);
     };
 
     let formatDate = function (date) {
@@ -218,15 +223,15 @@ export default defineComponent({
 
     let getCellClass = function (day) {
       if (
-        pickedDays.value.find(
+        pickedDates.value.find(
           (calendarDate) => calendarDate.getTime() == day.date.getTime()
         )
       ) {
         return "calendar__cell--edgePick";
       } else if (
-        pickedDays.value.length == 2 &&
-        day.date > pickedDays.value[0] &&
-        day.date < pickedDays.value[1]
+        pickedDates.value.length == 2 &&
+        day.date > pickedDates.value[0] &&
+        day.date < pickedDates.value[1]
       ) {
         return "calendar__cell--rangePick";
       } else if (!day.available && !day.currentMonth) {
@@ -312,7 +317,6 @@ export default defineComponent({
       calendarLabel,
       calendarDays,
       getCellClass,
-      pickedDays,
       pickDate,
       transformDate,
       closeModal,

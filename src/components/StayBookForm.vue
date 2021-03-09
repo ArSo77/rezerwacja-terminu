@@ -9,7 +9,10 @@
       :votes-number="votesNumber"
     />
     <hr />
-    <DatePicker :available-dates="availableDates" />
+    <DatePicker
+      v-model:picked-dates="pickedDates"
+      :available-dates="availableDates"
+    />
     <button
       id="submit-button"
       type="submit"
@@ -30,6 +33,7 @@ export default {
         new Date(2021, 2, 12),
         new Date(2021, 2, 17),
       ],
+      pickedDates: [new Date(2021, 2, 15), new Date(2021, 2, 18)],
       priceValue: 298,
       priceUnit: "zł",
       starValue: 4.4,

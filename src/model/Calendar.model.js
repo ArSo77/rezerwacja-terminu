@@ -40,7 +40,6 @@ export default class Calendar {
         for (let day = 0; day < weeks * 7; day++) {
             let flag = d.getMonth() != this.fd.getMonth();
             let available = this.availableDates.some(date => {
-                console.log(date.toLocaleDateString("en-US"), d.toLocaleDateString("en-US"))
                 return d.toLocaleDateString("en-US") == date.toLocaleDateString("en-US")
             });
             dayTable.push({ date: new Date(d), currentMonth: flag, available: available })
