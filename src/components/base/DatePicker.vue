@@ -158,7 +158,6 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const { availableDates, pickedDates } = toRefs(props);
-    console.log(pickedDates.value);
     const CalendarInstance = new Calendar({
       availableDates: availableDates.value,
     });
@@ -168,7 +167,6 @@ export default defineComponent({
     let calendarLabel = ref(label);
     let calendarDays = ref(days);
     let isOpened = ref(false);
-    // let pickedDates = ref([]);
     let CheckInDate = ref("Check In");
     let CheckOutDate = ref("Check Out");
 
