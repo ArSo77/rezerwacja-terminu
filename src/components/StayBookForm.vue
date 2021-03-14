@@ -1,22 +1,13 @@
 <template>
-  <form
-    :onsubmit="handleSubmit"
-    style="1px solid red"
-  >
-    <p class="price-label">{{price}}</p>
-    <StarRating
-      :star-value="starValue"
-      :votes-number="votesNumber"
-    />
+  <form :onsubmit="handleSubmit" style="1px solid red">
+    <p class="price-label">{{ price }}</p>
+    <StarRating :star-value="starValue" :votes-number="votesNumber" />
     <hr />
     <DatePicker
       v-model:picked-dates="pickedDates"
       :available-dates="availableDates"
     />
-    <button
-      id="submit-button"
-      type="submit"
-    >Submit</button>
+    <button id="submit-button" type="submit">Submit</button>
   </form>
 </template>
 
@@ -53,7 +44,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 form {
   min-width: 340px;
   border: 2px solid var(--border);
@@ -71,5 +62,11 @@ form {
 
 #submit-button {
   margin-top: 20px;
+}
+
+@media (min-width: 400px) {
+  form {
+    max-width: 450px;
+  }
 }
 </style>
