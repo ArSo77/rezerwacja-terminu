@@ -1,19 +1,16 @@
 <template>
-  <div
-    id="datepicker"
-    class="datepicker"
-  >
+  <div id="datepicker" class="datepicker">
     <label class="datepicker__input-label"> Dates: </label>
 
-    <div
-      @click="showModal"
-      class="datepicker-input"
-    >
+    <div @click="showModal" class="datepicker-input">
       <input
         type="button"
         name="checkInDate"
         class="datepicker-input__input"
-        :class="{'datepicker-input__input--active':isOpened&&pickedDates.length!=1}"
+        :class="{
+          'datepicker-input__input--active':
+            isOpened && pickedDates.length != 1,
+        }"
         :value="CheckInDate"
       />
 
@@ -26,7 +23,10 @@
         type="button"
         name="checkOutDate"
         class="datepicker-input__input"
-        :class="{'datepicker-input__input--active':isOpened&&pickedDates.length==1}"
+        :class="{
+          'datepicker-input__input--active':
+            isOpened && pickedDates.length == 1,
+        }"
         :value="CheckOutDate"
       />
     </div>
@@ -46,10 +46,7 @@
         >
           &lt;
         </button>
-        <p
-          class="datepicker__label"
-          aria-live="polite"
-        >
+        <p class="datepicker__label" aria-live="polite">
           {{ calendarLabel }}
         </p>
         <button
@@ -60,7 +57,6 @@
           @click="changeMonth(1)"
         >
           &gt;
-
         </button>
       </div>
 
@@ -72,34 +68,13 @@
       >
         <thead class="calendar__header">
           <tr>
-            <th
-              scope="col"
-              abbr="Sunday"
-            >Sun</th>
-            <th
-              scope="col"
-              abbr="Monday"
-            >Mon</th>
-            <th
-              scope="col"
-              abbr="Tuesday"
-            >Tue</th>
-            <th
-              scope="col"
-              abbr="Wednesday"
-            >Wed</th>
-            <th
-              scope="col"
-              abbr="Thursday"
-            >Thu</th>
-            <th
-              scope="col"
-              abbr="Friday"
-            >Fri</th>
-            <th
-              scope="col"
-              abbr="Saturday"
-            >Sat</th>
+            <th scope="col" abbr="Sunday">Sun</th>
+            <th scope="col" abbr="Monday">Mon</th>
+            <th scope="col" abbr="Tuesday">Tue</th>
+            <th scope="col" abbr="Wednesday">Wed</th>
+            <th scope="col" abbr="Thursday">Thu</th>
+            <th scope="col" abbr="Friday">Fri</th>
+            <th scope="col" abbr="Saturday">Sat</th>
           </tr>
         </thead>
         <tbody class="calendar__content">
@@ -161,21 +136,21 @@ export default defineComponent({
     const CalendarInstance = new Calendar({
       availableDates: availableDates.value,
     });
-    let label = CalendarInstance.getLabel();
-    let days = CalendarInstance.getDays();
-    let currentDate = CalendarInstance.getFocusedDay();
-    let calendarLabel = ref(label);
-    let calendarDays = ref(days);
-    let isOpened = ref(false);
-    let CheckInDate = ref("Check In");
-    let CheckOutDate = ref("Check Out");
+    const label = CalendarInstance.getLabel();
+    const days = CalendarInstance.getDays();
+    const currentDate = CalendarInstance.getFocusedDay();
+    const calendarLabel = ref(label);
+    const calendarDays = ref(days);
+    const isOpened = ref(false);
+    const CheckInDate = ref("Check In");
+    const CheckOutDate = ref("Check Out");
 
-    let showModal = function () {
+    function showModal() {
       isOpened.value = true;
       setFocus();
-    };
+    }
 
-    let closeModal = function (e) {
+    function closeModal(e) {
       if (e == undefined) {
         isOpened.value = false;
       }
@@ -183,20 +158,20 @@ export default defineComponent({
       if (path && !path.includes(document.getElementById("datepicker"))) {
         isOpened.value = false;
       }
-    };
+    }
 
-    let transformDate = function (date) {
+    function transformDate(date) {
       return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-    };
-    let setFocus = function () {
+    }
+    function setFocus() {
       nextTick(() => {
         let button = document.getElementById(
           `calendar__button-${transformDate(CalendarInstance.getFocusedDay())}`
         );
         button.focus();
       });
-    };
-    let pickDate = function (day) {
+    }
+    function pickDate(day) {
       let { date, available } = day;
       if (!available) return;
       CalendarInstance.changeFd(date);
@@ -213,13 +188,13 @@ export default defineComponent({
         CheckOutDate.value = formatDate(tempDate[1]);
         closeModal();
       }
-    };
+    }
 
     let formatDate = function (date) {
       return date.toLocaleDateString("en-US");
     };
 
-    let getCellClass = function (day) {
+    function getCellClass(day) {
       if (
         pickedDates.value.find(
           (calendarDate) => calendarDate.getTime() == day.date.getTime()
@@ -236,7 +211,7 @@ export default defineComponent({
         return "calendar__cell--not-available";
       }
       return "";
-    };
+    }
 
     function updateComponent() {
       calendarLabel.value = CalendarInstance.getLabel();
